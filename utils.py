@@ -12,15 +12,3 @@ def getJsonFromFile(showName):
         return template("{folder}/{filename}.json".format(folder=JSON_FOLDER, filename=showName))
     except:
         return "{}"
-
-# def getJsonContent():
-#     browse_shows = []
-#     try:
-#         for show in AVAILABE_SHOWS:
-#             show = int(show)
-#             json_content = static_file(str(show) + ".json", root="./data")
-#             browse_shows.append(json_content)
-#             return browse_shows
-#         return 
-#     except Exception as e:
-#         return repr(e) 

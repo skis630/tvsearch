@@ -35,4 +35,18 @@ def browse():
     except Exception as e:
         return repr(e)
 
+@get("/ajax/show/<id:int>")
+def get_episode(id):
+    sectionTemplate = "./templates/show.tpl"
+    try:
+        if str(id) in utils.AVAILABE_SHOWS:
+            show = [show for show in utils.AVAILABE_SHOWS if show == str(id)]
+            show = show[0]
+            result = json.loads(utils.getJsonFromFile(show))
+        return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData=result)
+    except Exception as e:
+        print(result)
+        return repr(e)
+
+
 run(host='localhost', port=os.environ.get('PORT', 5000), debug=True, reloader=True)

@@ -1,7 +1,8 @@
-import os
+import os, json
 from bottle import (get, post, redirect, request, route, run, static_file,
                     template)
 import utils
+INDEX = "./pages/index.html"
 
 # Static Routes
 
@@ -20,6 +21,18 @@ def img(filepath):
 @route('/')
 def index():
     sectionTemplate = "./templates/home.tpl"
-    return template("./pages/index.html", version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData = {})
+    return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData = {})
 
-run(host='0.0.0.0', port=os.environ.get('PORT', 5000))
+@get("/browse")
+def browse():
+    sectionTemplate = "./templates/browse.tpl"
+    result = []
+    try:
+        for show in utils.AVAILABE_SHOWS:
+            article = json.loads(utils.getJsonFromFile(show))
+            result.append(article)
+        return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData=result)
+    except Exception as e:
+        return repr(e)
+
+run(host='localhost', port=os.environ.get('PORT', 5000), debug=True, reloader=True)

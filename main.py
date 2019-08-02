@@ -3,6 +3,7 @@ from bottle import (get, post, redirect, request, route, run, static_file,
                     template)
 import utils
 INDEX = "./pages/index.html"
+SECTION_TEMPLATE = "./pages/"
 
 # Static Routes
 
@@ -26,14 +27,8 @@ def index():
 @get("/browse")
 def browse():
     sectionTemplate = "./templates/browse.tpl"
-    result = []
-    try:
-        for show in utils.AVAILABE_SHOWS:
-            article = json.loads(utils.getJsonFromFile(show))
-            result.append(article)
-        return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData=result)
-    except Exception as e:
-        return repr(e)
+    result = utils.getShows()
+    return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData=result) 
 
 @get("/ajax/show/<id:int>")
 def get_show(id):
@@ -44,14 +39,47 @@ def get_show(id):
 @get("/ajax/show/<show_id:int>/episode/<episode_id:int>")
 def get_episode(show_id, episode_id):
     sectionTemplate = "./templates/episode.tpl"
-    try:
-        show = utils.getShow(show_id)
-        episodes = show["_embedded"]["episodes"]
-        episode = [episode for episode in episodes if episode["id"] == episode_id]
-        episode = episode[0]
-        return template(sectionTemplate, result=episode)
-    except Exception as e:
-        return repr(e)
+    episode = utils.getEpisode(show_id, episode_id)
+    return template(sectionTemplate, result=episode)
+
+@get("/search")
+def get_search_page():
+    sectionTemplate = "./templates/search.tpl"
+    return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData={})
+
+@post("/search")
+def get_search_results():
+    sectionTemplate = "./templates/search_result.tpl"
+    query = request.forms.get("q")
+    shows = utils.getShows()
+  
+    shows_episodes = [show["_embedded"]["episodes"] for show in shows]
+    results = []
+    for i in range(len(shows)):
+      
+        for episode in shows_episodes[i]:
+            if episode["name"] is None or episode["summary"] is None:
+                print(episode["name"],episode["summary"]) 
+            try:
+                name = "" if episode["name"] is None else episode["name"]
+                summary = "" if episode["summary"] is None else episode["summary"]
+                if query in name or query in summary:
+                    result = {
+                        "showid": shows[i]["id"],
+                        "episodeid": episode["id"],
+                        "text": shows[i]["name"] + ": " + episode["name"]
+                    }
+                    results.append(result)
+                    print(result)
+            except Exception as e:
+                print(e)
+    print(results)
+    
+      
+   
+    return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData={}, results=results, query=query)
+  
+    
 
 
-run(host='localhost', port=os.environ.get('PORT', 5000), debug=True, reloader=True)
+run(host='localhost', port=7000, debug=True, reloader=True)

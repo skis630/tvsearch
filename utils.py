@@ -13,9 +13,18 @@ def getJsonFromFile(showName):
     except:
         return "{}"
 
+def getShows():
+    result = []
+    try:
+        for show in AVAILABE_SHOWS:
+            article = json.loads(getJsonFromFile(show))
+            result.append(article)
+        return result
+    except Exception as e:
+        return repr(e)
+
 def getShow(showId):
     try:
-        # if str(id) in utils.AVAILABE_SHOWS:
         show = [show for show in AVAILABE_SHOWS if show == str(showId)]
         show = show[0]
         result = json.loads(getJsonFromFile(show))
@@ -24,3 +33,16 @@ def getShow(showId):
     except Exception as e:
         print(result)
         return repr(e)
+
+def getEpisode(showId, episodeId):
+    try:
+        show = getShow(showId)
+        episodes = show["_embedded"]["episodes"]
+        episode = [episode for episode in episodes if episode["id"] == episodeId]
+        episode = episode[0]
+        return episode
+    except Exception as e:
+        return repr(e)
+
+# def searchEpisodes(query):
+   

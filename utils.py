@@ -44,5 +44,22 @@ def getEpisode(showId, episodeId):
     except Exception as e:
         return repr(e)
 
-# def searchEpisodes(query):
-   
+def searchEpisodes(query):
+    shows = getShows()
+    shows_episodes = [show["_embedded"]["episodes"] for show in shows]
+    results = []
+    for i in range(len(shows)):    
+        for episode in shows_episodes[i]:
+            try:
+                name = episode["name"]
+                summary = episode["summary"]
+                if query in name or query in summary:
+                    result = {
+                        "showid": shows[i]["id"],
+                        "episodeid": episode["id"],
+                        "text": shows[i]["name"] + ": " + episode["name"]
+                    }
+                    results.append(result)
+            except Exception as e:
+                print(e)
+    return results

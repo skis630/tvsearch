@@ -51,35 +51,8 @@ def get_search_page():
 def get_search_results():
     sectionTemplate = "./templates/search_result.tpl"
     query = request.forms.get("q")
-    shows = utils.getShows()
-  
-    shows_episodes = [show["_embedded"]["episodes"] for show in shows]
-    results = []
-    for i in range(len(shows)):
-      
-        for episode in shows_episodes[i]:
-            if episode["name"] is None or episode["summary"] is None:
-                print(episode["name"],episode["summary"]) 
-            try:
-                name = "" if episode["name"] is None else episode["name"]
-                summary = "" if episode["summary"] is None else episode["summary"]
-                if query in name or query in summary:
-                    result = {
-                        "showid": shows[i]["id"],
-                        "episodeid": episode["id"],
-                        "text": shows[i]["name"] + ": " + episode["name"]
-                    }
-                    results.append(result)
-                    print(result)
-            except Exception as e:
-                print(e)
-    print(results)
-    
-      
-   
+    results = utils.searchEpisodes(query)  
     return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData={}, results=results, query=query)
   
-    
-
 
 run(host='localhost', port=7000, debug=True, reloader=True)

@@ -12,3 +12,15 @@ def getJsonFromFile(showName):
         return template("{folder}/{filename}.json".format(folder=JSON_FOLDER, filename=showName))
     except:
         return "{}"
+
+def getShow(showId):
+    try:
+        # if str(id) in utils.AVAILABE_SHOWS:
+        show = [show for show in AVAILABE_SHOWS if show == str(showId)]
+        show = show[0]
+        result = json.loads(getJsonFromFile(show))
+        print(result['name'])
+        return result
+    except Exception as e:
+        print(result)
+        return repr(e)

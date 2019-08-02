@@ -36,16 +36,21 @@ def browse():
         return repr(e)
 
 @get("/ajax/show/<id:int>")
-def get_episode(id):
+def get_show(id):
     sectionTemplate = "./templates/show.tpl"
+    result = utils.getShow(id)
+    return template(sectionTemplate, result=result)
+
+@get("/ajax/show/<show_id:int>/episode/<episode_id:int>")
+def get_episode(show_id, episode_id):
+    sectionTemplate = "./templates/episode.tpl"
     try:
-        if str(id) in utils.AVAILABE_SHOWS:
-            show = [show for show in utils.AVAILABE_SHOWS if show == str(id)]
-            show = show[0]
-            result = json.loads(utils.getJsonFromFile(show))
-        return template(INDEX, version=utils.getVersion(), sectionTemplate=sectionTemplate, sectionData=result)
+        show = utils.getShow(show_id)
+        episodes = show["_embedded"]["episodes"]
+        episode = [episode for episode in episodes if episode["id"] == episode_id]
+        episode = episode[0]
+        return template(sectionTemplate, result=episode)
     except Exception as e:
-        print(result)
         return repr(e)
 
 

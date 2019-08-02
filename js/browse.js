@@ -35,6 +35,7 @@ Browse.loadContent = function(path, updateHistory = true, stateObj = {}){
     return response.text();
   })
   .then(function (result) {
+      console.log(result)
       if (updateHistory){
         window.history.pushState(stateObj, "Ajax Load", path);
       }

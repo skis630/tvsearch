@@ -28,10 +28,8 @@ def getShow(showId):
         show = [show for show in AVAILABE_SHOWS if show == str(showId)]
         show = show[0]
         result = json.loads(getJsonFromFile(show))
-        print(result['name'])
         return result
     except Exception as e:
-        print(result)
         return repr(e)
 
 def getEpisode(showId, episodeId):
